@@ -45,5 +45,10 @@ int main(void){
 		free(n1);
 	}
 
+	while (!SLIST_EMPTY(&head2)) {           /* List Deletion. */
+		entry *n1 = SLIST_FIRST(&head2);
+		SLIST_REMOVE_HEAD(&head2, entries);
+		free(n1);
+	}
 	return EXIT_SUCCESS;
 }
