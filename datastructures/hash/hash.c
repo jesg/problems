@@ -2,53 +2,77 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/queue.h>
+#include <glib.h>
 
-typedef struct entry {
+typedef struct hash {
+	int length;
+	GList* *buckets;
+} hash;
+
+typedef struct element {
+	int key;
 	int value;
-	SLIST_ENTRY(entry) entries;
-} entry;
+} element;
+
+hash *hash_new(int);
+void hash_free(hash*);
+void hash_insert(hash*, int, int);
+int hash_search(hash*, int);
+
+int int_hash(hash *self, int key) {
+	return (31*key)%self->length;
+}
+
+hash *hash_new(int length) {
+	hash *my_hash = malloc(sizeof(hash));
+	my_hash->length = length;
+	my_hash->buckets = malloc(sizeof(GList)*length);
+	for(int i=0; i<length; i++) my_hash->buckets[i] = NULL;
+	return my_hash;
+}
+
+void hash_insert(hash *self, int key, int value) {
+	GList *bucket = self->buckets[int_hash(self, key)];
+	element *e = g_new(element, 1);
+	e->key = key;
+	e->value = value;
+	bucket = g_list_prepend(bucket, e);
+	self->buckets[int_hash(self, key)] = bucket;
+}
+
+int hash_search(hash *self, int key) {
+	GList *bucket = self->buckets[int_hash(self, key)];
+	GList *l = bucket;
+	while(l != NULL) {
+		GList *next = l;
+		if(((element*)next->data)->key == key) {
+			return ((element*)next->data)->value;
+		}
+		l = l->next;
+	}
+	return 0;
+}
+
+void hash_free(hash *self) {
+	for(int i=0; i< self->length; i++) {
+		g_list_free_full(self->buckets[i], g_free);
+	}
+	free(self->buckets);
+	free(self);
+}
+
 
 int main(void){
 
-	SLIST_HEAD(slisthead, entry) head = SLIST_HEAD_INITIALIZER(head);
-	SLIST_HEAD(slisthead2, entry) head2 = SLIST_HEAD_INITIALIZER(head2);
-	SLIST_INIT(&head);
-	SLIST_INIT(&head2);
+	hash *my_hash = hash_new(20);
+	for(int i=0; i<10; i++) {
+		hash_insert(my_hash, i, (i*2));
+	}
 
 	for(int i=0; i<10; i++) {
-		entry *n1 = malloc(sizeof(struct entry));
-		n1->value = i;
-		SLIST_INSERT_HEAD(&head, n1, entries);
+		printf("%i => %i\n", i, hash_search(my_hash, i));
 	}
+	hash_free(my_hash);
 
-	for(int i=10; i>0; i--) {
-		entry *n1 = malloc(sizeof(struct entry));
-		n1->value = i;
-		SLIST_INSERT_HEAD(&head2, n1, entries);
-	}
-
-	printf("head\n");
-	entry *var;
-	SLIST_FOREACH(var, &head, entries) {
-		printf("%i\n", var->value);
-	}
-
-	printf("head2\n");
-	SLIST_FOREACH(var, &head2, entries) {
-		printf("%i\n", var->value);
-	}
-
-	while (!SLIST_EMPTY(&head)) {           /* List Deletion. */
-		entry *n1 = SLIST_FIRST(&head);
-		SLIST_REMOVE_HEAD(&head, entries);
-		free(n1);
-	}
-
-	while (!SLIST_EMPTY(&head2)) {           /* List Deletion. */
-		entry *n1 = SLIST_FIRST(&head2);
-		SLIST_REMOVE_HEAD(&head2, entries);
-		free(n1);
-	}
 	return EXIT_SUCCESS;
 }
