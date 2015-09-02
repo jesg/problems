@@ -25,3 +25,26 @@ def bfs(graph, s)
     u.color = :black
   end
 end
+
+def print_path(graph, s, v)
+  if v.i == s.i
+    puts s.i
+  elsif v.prev == nil
+    puts "no path from #{s.i} to #{v.i}"
+  else
+    print_path(graph, s, v.prev)
+    puts v.i
+  end
+end
+
+graph = [
+  [ Vertex.new(:white, Float::INFINITY, nil, 1), Vertex.new(:white, Float::INFINITY, nil, 3) ],
+  [ Vertex.new(:white, Float::INFINITY, nil, 4)],
+  [ Vertex.new(:white, Float::INFINITY, nil, 5), Vertex.new(:white, Float::INFINITY, nil, 4) ],
+  [ Vertex.new(:white, Float::INFINITY, nil, 1)],
+  [ Vertex.new(:white, Float::INFINITY, nil, 3)],
+  [ Vertex.new(:white, Float::INFINITY, nil, 5)],
+]
+
+bfs(graph, Vertex.new(:white, Float::INFINITY, nil, 1))
+print_path(graph, graph[0][0], graph[4][0])
