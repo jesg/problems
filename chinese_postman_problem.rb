@@ -6,7 +6,6 @@
 class Graph
 
   attr_accessor :n, :neg, :pos, :degree, :path, :edges, :cheapest_edge, :f, :defined, :label, :c, :initialized
-  # private :n, :@degree, :@neg, :@pos, :path, :edges, :cheapest_edge, :f, :defined, :label, :c, :initialized
 
   def initialize(vertices)
     @n = vertices
