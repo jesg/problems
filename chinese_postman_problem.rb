@@ -22,12 +22,12 @@ class Graph
 
 
   def cpp
-    puts label.to_s
     initialized?
     least_cost_paths
     check_valid
     find_feasible
-    puts 'hi' while improvments
+    while improvments do
+    end
     print(0)
   end
 
@@ -123,7 +123,6 @@ class Graph
     end
 
     r.least_cost_paths
-    puts r.c.to_s
     (0...n).each do |i|
       if r.c[i][i] < 0
         k = 0
@@ -147,7 +146,6 @@ class Graph
           end
           u = v
         end while u != i
-        puts 'foobar'
         return true
       end
     end
@@ -155,34 +153,35 @@ class Graph
   end
 
   def print(start)
-    puts f.to_s
     v = start
     loop do
+      skip = false
       u = v
       (0...n).each do |i|
         if f[u][i] > 0
           v = i
           @f[u][v] -= 1
           puts "  take path from #{u} to #{v}: "
+          while u != v
+            p = path[u][v]
+            puts "    take edge #{label[u][p][cheapest_edge[u][p]]} from #{u} to #{p}"
+            u = p
+          end
+          skip = true
         end
-        while u != v
-          p = path[u][v]
-          puts "    take edge #{label[u][p][cheapest_edge[u][p]]} from #{u} to #{p}"
-          u = p
-        end
-        u = v
-        break
       end
+
+      next if skip
 
       v = -1
       (0...n).each do |i|
         if edges[u][i] > 0
           v = i if v == -1 || i != path[u][start]
         end
-        return if v == -1
-        puts "take edge #{label[u][v][edges[u][v]-1]} from #{u} to #{v}"
-        @edges[u][v] -= 1
       end
+      return if v == -1
+      puts "take edge #{label[u][v][edges[u][v]-1]} from #{u} to #{v}"
+      @edges[u][v] -= 1
     end
   end
 
