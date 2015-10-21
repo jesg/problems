@@ -1,9 +1,10 @@
 
 #include <iostream>
+#include <string>
 
 struct name {
-	const char first_name[200];
-	const char last_name[200];
+	const std::string first_name;
+	const std::string last_name;
 };
 
 int main()
