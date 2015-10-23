@@ -2,16 +2,16 @@
 #include <iostream>
 #include <vector>
 
-void combinations(const unsigned int, const std::vector<int>&, const std::vector<std::vector<int>>&);
-void add_next(const unsigned int, const std::vector<int>&, const std::vector<int>&, const std::vector<std::vector<int>>&);
+void combinations(const unsigned int, const std::vector<int>&, std::vector<std::vector<int>>&);
+void add_next(const unsigned int, const std::vector<int>&, std::vector<int>&, std::vector<std::vector<int>>&);
 
-void combinations(const unsigned int dimension, const std::vector<int> &input, const std::vector<std::vector<int>> &output)
+void combinations(const unsigned int dimension, const std::vector<int>& input, std::vector<std::vector<int>>& output)
 {
 	std::vector<int> current_output;
 	add_next(dimension, input, current_output, output);
 }
 
-void add_next(const unsigned int dimension, const std::vector<int>& input, const std::vector<int>& current_output, const std::vector<std::vector<int>>& output)
+inline void add_next(const unsigned int dimension, const std::vector<int>& input, std::vector<int>& current_output, std::vector<std::vector<int>>& output)
 {
 	if(dimension == 0) {
 		output.push_back(current_output);
