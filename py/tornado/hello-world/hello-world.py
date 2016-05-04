@@ -3,11 +3,11 @@ import tornado.web
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write("Hello, world")
+        self.write({'message': 'hello world', 'uri': self.request.uri})
 
 def make_app():
     return tornado.web.Application([
-        (r"/", MainHandler),
+        (r".*", MainHandler),
     ])
 
 if __name__ == "__main__":
