@@ -12,8 +12,14 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter { // (1)
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
-        // Discard the received data silently.
-        ((ByteBuf) msg).release(); // (3)
+        ByteBuf in = (ByteBuf) msg;
+        try {
+            while(in.isReadable()) {
+                System.out.println(in.toString(io.netty.util.CharsetUtil.UTF_8));
+            }
+        } finally {
+            in.release();
+        }
     }
 
     @Override
