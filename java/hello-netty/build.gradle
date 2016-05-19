@@ -13,7 +13,7 @@ dependencies {
 }
 
 jar {
-	baseName = 'netty-example',
+	baseName = 'netty-example'
 	version =  '0.1.0'
 }
 
