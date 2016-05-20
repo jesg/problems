@@ -23,6 +23,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelOption;
+import io.netty.handler.codec.http.HttpRequest;
 
 public class HexDumpProxyFrontendHandler extends ChannelInboundHandlerAdapter {
 
@@ -64,6 +65,10 @@ public class HexDumpProxyFrontendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
+        if(msg instanceof HttpRequest) {
+            HttpRequest req = (HttpRequest) msg;
+            System.out.println("uri: " + req.uri());
+        }
         if (outboundChannel.isActive()) {
             outboundChannel.writeAndFlush(msg).addListener(new ChannelFutureListener() {
                 @Override

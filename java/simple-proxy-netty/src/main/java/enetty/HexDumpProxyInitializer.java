@@ -19,6 +19,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.codec.http.HttpServerCodec;
 
 public class HexDumpProxyInitializer extends ChannelInitializer<SocketChannel> {
 
@@ -34,6 +35,7 @@ public class HexDumpProxyInitializer extends ChannelInitializer<SocketChannel> {
     public void initChannel(SocketChannel ch) {
         ch.pipeline().addLast(
                 new LoggingHandler(LogLevel.INFO),
+                new HttpServerCodec(),
                 new HexDumpProxyFrontendHandler(remoteHost, remotePort));
     }
 }
