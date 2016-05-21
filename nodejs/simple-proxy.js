@@ -4,8 +4,11 @@ const hostname = '127.0.0.1';
 const port = 3000;
 
 const proxy = function(req, res, host, path, port) {
+	const destination = host + ':' + port + path;
+	console.info('BEGIN ' + ' forward to ' + destination);
 	callback = (response) => {
 		res.statusCode = response.statusCode;
+		console.info('END ' + ' forward to ' + response.statusCode + ' ' + destination);
 		res.headers = response.headers;
 
 		response.on('data', function (chunk) {
@@ -14,6 +17,7 @@ const proxy = function(req, res, host, path, port) {
 
 		response.on('end', function () {
 			res.end();
+			console.info('END ' + req.method + ' ' + res.statusCode + ' ' + path);
 		});
 	}
 
@@ -37,13 +41,14 @@ const proxy = function(req, res, host, path, port) {
 }
 
 const server = http.createServer((req, res) => {
+	console.info('BEGIN ' + req.method + ' ' + req.url);
 
-	proxy(req, res, 'localhost', '/bla', 8888)
+	proxy(req, res, 'localhost', req.url, 8888)
 
 });
 
 server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+  console.info(`Server running at http://${hostname}:${port}/`);
 });
 
 // echo cats
