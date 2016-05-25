@@ -1,15 +1,69 @@
 const http = require('http');
+const buffer = require('buffer');
+const webdriver = require('selenium-webdriver')
 
 const hostname = '127.0.0.1';
 const port = 3000;
 
-error_handler = function(req, res, msg) {
+const error_handler = function(req, res, msg) {
+	res.write(msg);
 	res.end();
 	console.warn('WARNING ' + msg);
 	console.info('END ' + req.method + ' ' + res.statusCode + ' ' + req.url);
 }
 const cached_sessions = {};
 const active_sessions = {'1234': {'host': 'localhost', 'port': 8888, 'cap': {}}};
+const new_session = function(req, res, match) {
+	if(req.method != 'POST') {
+		res.statusCode = 404;
+		error_handler(req, res, 'must use http POST when creating a new session');
+		return;
+	}
+
+	var chunks = '';
+	req.on('data', function(chunk) {
+		chunks += chunk;
+	});
+
+	req.on('end', function() {
+		try {
+			var body = JSON.parse(chunks);
+			console.info(body);
+
+			const driver = new webdriver.Builder()
+			.forBrowser('chrome')
+			.build();
+
+driver.getCapabilities()
+			.then(function(capabilities) {
+				const plain_caps = {};
+				capabilities.forEach(function(v, k) {
+					plain_caps[k] = v;
+				});
+				driver.getSession()
+				.then(function(session_id) {
+					// also need host and port
+					const host = 'localhost';
+					// look in http executors ... need to find port
+					// the port is hidden and not reachable after the browser is created
+					console.info('NEW SESSION ' + session_id.getId() + "\n" + JSON.stringify(plain_caps, null, 2));
+					res.write(JSON.stringify({
+						'sessionId': session_id.getId(),
+						'status': 0,
+						'value': plain_caps
+					}));
+					res.end();
+					driver.quit();
+					console.info('END ' + req.method +' ' + res.statusCode + ' ' + req.url);
+				});
+			})
+		} catch(err) {
+			console.warn(err);
+			error_handler(req, res, 'unable to create browser');
+			return;
+		}
+	});
+}
 
 // cleanup on error
 const proxy_session = function(req, res, capture) {
@@ -60,7 +114,6 @@ const proxy_session = function(req, res, capture) {
 	});
 }
 
-const new_session = 0;
 const quit_session = 0;
 const kill_session = 0;
 const reuse_session = 0;
